@@ -1,0 +1,72 @@
+下述命令从GitHub下载示例代码，并把程序文件夹切换到“1a”版本，即程序的初始版本：
+
+$ git clone https://github.com/miguelgrinberg/flasky.git
+$ cd flasky
+$ git checkout 1a
+
+查看git版本:
+(flask_web_read) tarena@tarena:~/flask_web_read$ git --version
+git version 2.17.1
+
+
+检查虚拟环境是否安装:
+输入以下命令可以检查系统是否安装了virtualenv
+$ virtualenv --version
+
+配置虚拟环境
+tarena@tarena:~/flasky$ virtualenv venv
+运行虚拟环境
+tarena@tarena:~/flasky$ source venv/bin/activate
+(venv) tarena@tarena:~/flasky$ 
+
+
+接下来在虚拟环境下完成操作
+
+执行下述命令可在虚拟环境中安装Flask：
+(venv) $ pip install flask
+
+要想验证Flask是否正确安装，你可以启动Python解释器，尝试导入Flask：
+
+(venv) $ python
+>>> import flask
+>>>
+
+程序和请求上下文
+表2-1　Flask上下文全局变量
+
+变量名                 上下文             说明
+
+current_app         程序上下文       当前激活程序的程序实例
+
+g                   程序上下文       处理请求时用作临时存储的对象。每次请求都会重设这个变量
+
+request             请求上下文       请求对象，封装了客户端发出的HTTP请求中的内容
+
+session             请求上下文        用户会话，用于存储请求之间需要“记住”的值的词典
+
+Flask在分发请求之前激活（或推送）程序和请求上下文，请求处理完成后再将其删除。程序上下文被推送后，就可以在线程中使用current_app和g变量。类似地，请求上下文被推送后，就可以使用request和session变量。如果使用这些变量时我们没有激活程序上下文或请求上下文，就会导致错误。如果你不知道为什么这4个上下文变量如此有用，先别担心，后面的章节会详细说明。
+
+下面这个Python shell会话演示了程序上下文的使用方法：
+
+>>> from hello import app
+>>> from flask import current_app
+>>> current_app.name
+Traceback (most recent call last):
+...
+RuntimeError: working outside of application context
+>>> app_ctx = app.app_context()
+>>> app_ctx.push()
+>>> current_app.name
+'hello'
+>>> app_ctx.pop()
+在这个例子中，没激活程序上下文之前就调用current_app.name会导致错误，但推送完上下文之后就可以调用了。注意，在程序实例上调用app.app_context()可获得一个程序上下文。
+
+Flask使用app.route修饰器或者非修饰器形式的app.add_url_rule()生成映射。
+
+
+2.6　Flask扩展
+Flask被设计为可扩展形式，故而没有提供一些重要的功能，例如数据库和用户认证，所以开发者可以自由选择最适合程序的包，或者按需求自行开发。
+社区成员开发了大量不同用途的扩展，如果这还不能满足需求，你还可使用所有Python标准包或代码库。
+
+2.6.1　使用Flask-Script支持命令行选项
+
